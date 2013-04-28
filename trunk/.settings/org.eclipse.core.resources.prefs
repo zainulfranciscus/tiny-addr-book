@@ -1,0 +1,8 @@
+eclipse.preferences.version=1
+encoding//src/main/java=UTF-8
+encoding//src/main/java/Main.java=UTF-8
+encoding//src/test/java=UTF-8
+encoding//src/test/java/com/addrbook/repository/AddressBookRepositoryTest.java=UTF-8
+encoding//src/test/java/com/addrbook/service/FileServiceTest.java=UTF-8
+encoding//src/test/resources/test.csv=UTF-8
+encoding//src/test/resources/test4.csv=UTF-8
