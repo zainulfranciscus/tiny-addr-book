@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository;
 
 import com.addrbook.domain.AddressBook;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * This class is responsible for storing  address book data.
  * 
@@ -36,6 +38,8 @@ public class AddressBookRepository {
 	 */
 	public void save(String bookname, String name, String phone) {
 
+		checkNotNull(name,"Name must not be null");
+		
 		AddressBook addrBook = null;
 
 		if (exist(bookname)) {

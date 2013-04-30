@@ -3,8 +3,6 @@ package com.addrbook.domain;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Iterator;
-import java.util.Set;
-import java.util.TreeSet;
 
 import org.junit.Test;
 
@@ -60,17 +58,15 @@ public class AddressBookTest {
 	@Test
 	public void testDifference() {
 
-		Set<String> set = new TreeSet<String>();
-		set.add("John");
-		set.add("bruce");
-		Names names1 = new Names(set);
+		AddressBook addrBook = new AddressBook();
+		addrBook.add("John", "11");
+		addrBook.add("bruce", "22");
 
-		Set<String> set2 = new TreeSet<String>();
-		set2.add("Abigail");
-		set2.add("bruce");
-		Names names2 = new Names(set2);
+		AddressBook addrBook2 = new AddressBook();
+		addrBook2.add("Abigail", "33");
+		addrBook2.add("bruce", "22");
 
-		Names diff = AddressBook.difference(names1, names2);
+		Names diff = AddressBook.difference(addrBook.names(), addrBook2.names());
 		Iterator<String> it = diff.iterator();
 
 		assertEquals("Abigail", it.next());
@@ -80,28 +76,26 @@ public class AddressBookTest {
 	@Test
 	public void testDiffWithSubSets() {
 
-		Set<String> set = new TreeSet<String>();
-		set.add("Briar");
-		set.add("Mark");
-		set.add("Gabriel");
-		set.add("John");
-		Names names1 = new Names(set);
+		AddressBook addrBook = new AddressBook();
+		addrBook.add("Briar", "11");
+		addrBook.add("Mark", "22");
+		addrBook.add("Gabriel", "44");
+		addrBook.add("John", "55");
 
-		Set<String> set2 = new TreeSet<String>();
-		set2.add("Gabriel");
-		set2.add("Mark");
-		Names names2 = new Names(set2);
+		AddressBook addrBook2 = new AddressBook();
+		addrBook2.add("Briar", "33");
+		addrBook2.add("Mark", "99");
 
-		Names diff = AddressBook.difference(names1, names2);
+		Names diff = AddressBook.difference(addrBook.names(), addrBook2.names());
 		Iterator<String> it = diff.iterator();
 
-		assertEquals("Briar", it.next());
+		assertEquals("Gabriel", it.next());
 		assertEquals("John", it.next());
 
 	}
-	
+
 	@Test
-	public void testChineseNames(){
+	public void testChineseNames() {
 		AddressBook addrBook = new AddressBook();
 		addrBook.add("末农科院", "444333");
 		addrBook.add("Amy", "777888");
@@ -113,27 +107,46 @@ public class AddressBookTest {
 		assertEquals("末农科院", it.next());
 		assertEquals("的二", it.next());
 	}
-	
+
 	@Test
-	public void testDiffChineseNames(){
-		Set<String> set = new TreeSet<String>();
-		set.add("反");
-		set.add("我");
-		set.add("丽");
-		Names names1 = new Names(set);
+	public void testDiffChineseNames() {
 
-		Set<String> set2 = new TreeSet<String>();
-		set2.add("反");
-		set2.add("我");
-		set2.add("与李");
-		Names names2 = new Names(set2);
+		AddressBook addrBook = new AddressBook();
+		addrBook.add("反", "11");
+		addrBook.add("我", "22");
+		addrBook.add("丽", "44");
 
-		Names diff = AddressBook.difference(names1, names2);
+		AddressBook addrBook2 = new AddressBook();
+		addrBook2.add("反", "33");
+		addrBook2.add("我", "99");
+		addrBook2.add("与李", "00");
+		Names diff = AddressBook.difference(addrBook.names(), addrBook2.names());
 		Iterator<String> it = diff.iterator();
 
 		assertEquals("与李", it.next());
 		assertEquals("丽", it.next());
-		
+
+	}
+
+	@Test(expected = NullPointerException.class)
+	public void testEmptyNames() {
+		AddressBook addrBook = new AddressBook();
+		addrBook.add("", "");
+
+		Iterator<String> it = addrBook.names().iterator();
+		String name = it.next();
+		assertEquals("", name);
+		assertEquals("", addrBook.phone(name));
+
+		AddressBook addrBook2 = new AddressBook();
+
+		addrBook2.add(null, "");
+
+		Iterator<String> it2 = addrBook2.names().iterator();
+		String name2 = it2.next();
+
+		assertEquals(null, name2);
+		assertEquals("", addrBook.phone(name2));
 	}
 
 }
