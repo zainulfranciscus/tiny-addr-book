@@ -2,6 +2,7 @@ package com.addrbook.domain;
 
 import java.io.Serializable;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import com.google.common.collect.Ordering;
 
 /**
@@ -25,6 +26,8 @@ public class NameComparator extends Ordering<String> implements Serializable {
 	@Override
 	public int compare(String left, String right) {
 
+		checkNotNull(left,"Name provided cannot be null");
+		checkNotNull(right, "Name provided cannot be null");
 		return left.toLowerCase().compareTo(right.toLowerCase());
 	}
 

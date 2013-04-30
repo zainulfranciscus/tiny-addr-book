@@ -1,17 +1,15 @@
 package com.addrbook.domain;
 
-import java.io.File;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
-
-import org.mapdb.DB;
-import org.mapdb.DBMaker;
 
 import com.google.common.collect.Ordering;
 import com.google.common.collect.Sets;
-import com.google.common.io.Files;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * This class stores names and phones
@@ -21,25 +19,10 @@ import com.google.common.io.Files;
  */
 public class AddressBook {
 
-	private Map<String, String> namesAndPhones;
-
 	/**
-	 * The constructor of this class
+	 * A map that stores names and phone number in ascending order
 	 */
-	public AddressBook() {
-
-		File dbDir = Files.createTempDir();
-		File dbFile = new File(dbDir, dbDir.getName());
-
-		DB db = DBMaker.newFileDB(dbFile).deleteFilesAfterClose().closeOnJvmShutdown().writeAheadLogDisable()
-				.cacheSize(10).make();
-
-		/**
-		 * Data in this map is stored in the disk. The intention is to allow
-		 * anyone to create big address books (> 5 gb);
-		 */
-		namesAndPhones = db.createTreeMap("AddressBook", 10, true, false, null, null, NameComparator.ascOrder());
-	}
+	private Map<String, String> namesAndPhones = new TreeMap<String, String>(NameComparator.ascOrder());
 
 	/**
 	 * Add the provided name and phone in an address book
@@ -48,6 +31,7 @@ public class AddressBook {
 	 * @param phone
 	 */
 	public void add(String name, String phone) {
+		checkNotNull(name,"name must not be null");
 		namesAndPhones.put(name, phone);
 	}
 
@@ -101,9 +85,9 @@ public class AddressBook {
 	}
 
 	/**
+	 * Produce names that are unique in either names.
 	 * 
-	 * 
-	 * @param n1 of a names
+	 * @param n1
 	 * @param n2
 	 * @return names that are unique in both list.
 	 */
@@ -115,8 +99,8 @@ public class AddressBook {
 
 	/**
 	 * This class stores a set of names recorded in an address book. The
-	 * intention of creating this class is to provide a client useful method to
-	 * print names, either in ascending or descending order.
+	 * intention of creating this class is to provide useful methods for
+	 * printing names, either in ascending or descending order.
 	 * 
 	 * @author Zainul Franciscus
 	 * 
@@ -124,21 +108,16 @@ public class AddressBook {
 	public static class Names {
 		Set<String> names;
 
-		public Names(Set<String> n) {
-
-			names = n;
+		public Names() {
 		}
-		
 
-		/**
-		 * @param n
-		 *            a set of names
-		 * @param nc
-		 *            used to sort the provided set
-		 */
-		public Names(Set<String> n, Ordering<String> nc) {
-			names = new TreeSet<String>(nc);
-			names.addAll(n);
+		public Names(Set<String> set) {
+			names = set;
+		}
+
+		public Names(Set<String> set, Ordering<String> order) {
+			names = new TreeSet<String>(order);
+			names.addAll(set);
 		}
 
 		/**
@@ -155,6 +134,7 @@ public class AddressBook {
 			for (String name : names) {
 				System.out.println(name);
 			}
+
 		}
 
 		/**
@@ -162,13 +142,6 @@ public class AddressBook {
 		 */
 		public Iterator<String> iterator() {
 			return names.iterator();
-		}
-
-		/**
-		 * @return the number of names in this class
-		 */
-		public int size() {
-			return names.size();
 		}
 
 	}
