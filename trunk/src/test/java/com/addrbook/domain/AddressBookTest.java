@@ -1,103 +1,85 @@
 package com.addrbook.domain;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 import java.util.Iterator;
-import java.util.Set;
-import java.util.TreeSet;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import com.addrbook.domain.AddressBook.Names;
 
 public class AddressBookTest {
 
-	@Test
-	public void testAdd() {
+	private AddressBook addrBook = new AddressBook();
+	private AddressBook addrBook2 = new AddressBook();
+	private AddressBook emptyBook = new AddressBook();
 
-		AddressBook addrBook = new AddressBook();
-		addrBook.add("John", "1111");
-		addrBook.add("Amy", "2222");
+	@Before
+	public void setup() {
+
+		addrBook.add(AddressBookTestData.JOHN, AddressBookTestData.JOHN_PHONE);
+		addrBook.add(AddressBookTestData.AMY, AddressBookTestData.AMY_PHONE);
+
+		addrBook2.add(AddressBookTestData.ABIGAIL, "");
+		addrBook2.add(AddressBookTestData.AMY, AddressBookTestData.AMY_PHONE);
+	}
+
+	@Test
+	public void testThereShouldBe2Contacts() {
 
 		Names names = addrBook.names();
+		assertThat(names.size(), equalTo(2));
+
 		Iterator<String> it = names.iterator();
-		assertEquals("Amy", it.next());
-		assertEquals("John", it.next());
+		assertEquals(AddressBookTestData.AMY, it.next());
+		assertEquals(AddressBookTestData.JOHN, it.next());
 
-		assertEquals("1111", addrBook.phone("John"));
-		assertEquals("2222", addrBook.phone("Amy"));
+		assertEquals(AddressBookTestData.JOHN_PHONE, addrBook.phoneNumberOf(AddressBookTestData.JOHN));
+		assertEquals(AddressBookTestData.AMY_PHONE, addrBook.phoneNumberOf(AddressBookTestData.AMY));
 	}
 
 	@Test
-	public void testDesc() {
-		AddressBook addrBook = new AddressBook();
-		addrBook.add("Kim", "2222");
-		addrBook.add("Garry", "1111");
-		addrBook.add("Mary", "3333");
+	public void testNamesCanBeSortedDescendingly() {
 
-		Names names = addrBook.names().desc();
+		Names names = addrBook.names().sortedDescendingly();
 		Iterator<String> it = names.iterator();
-		assertEquals("Mary", it.next());
-		assertEquals("Kim", it.next());
-		assertEquals("Garry", it.next());
+		assertEquals(AddressBookTestData.JOHN, it.next());
+		assertEquals(AddressBookTestData.AMY, it.next());
 
 	}
-
+	
 	@Test
-	public void testNames() {
-		AddressBook addrBook = new AddressBook();
-		addrBook.add("mark", "2222");
-		addrBook.add("Julie", "1111");
-		addrBook.add("Adrian", "3333");
-
-		Names names = addrBook.names();
+	public void testNamesCanBeSortedAscendingly(){
+		Names names = addrBook.names().sortedAscendingly();
 		Iterator<String> it = names.iterator();
-		assertEquals("Adrian", it.next());
-		assertEquals("Julie", it.next());
-		assertEquals("mark", it.next());
+		assertEquals(AddressBookTestData.AMY, it.next());
+		assertEquals(AddressBookTestData.JOHN, it.next());
 	}
 
 	@Test
-	public void testDifference() {
+	public void testThereShouldBe2UniqueNames() {
 
-		Set<String> set = new TreeSet<String>();
-		set.add("John");
-		set.add("bruce");
-		Names names1 = new Names(set);
+		Names uniqueNames = AddressBook.findUniqueNames(addrBook, addrBook2);
 
-		Set<String> set2 = new TreeSet<String>();
-		set2.add("Abigail");
-		set2.add("bruce");
-		Names names2 = new Names(set2);
+		assertThat(uniqueNames.size(), equalTo(2));
 
-		Names diff = AddressBook.difference(names1, names2);
-		Iterator<String> it = diff.iterator();
-
-		assertEquals("Abigail", it.next());
-		assertEquals("John", it.next());
+		Iterator<String> it = uniqueNames.iterator();
+		assertEquals(AddressBookTestData.ABIGAIL, it.next());
+		assertEquals(AddressBookTestData.JOHN, it.next());
 	}
-
+	
 	@Test
-	public void testDiffWithSubSets() {
+	public void testUniqueNamesWithEmptyAddrBook(){
+		Names uniqueNames = AddressBook.findUniqueNames(addrBook, emptyBook);
 
-		Set<String> set = new TreeSet<String>();
-		set.add("Briar");
-		set.add("Mark");
-		set.add("Gabriel");
-		set.add("John");
-		Names names1 = new Names(set);
+		assertThat(uniqueNames.size(), equalTo(2));
 
-		Set<String> set2 = new TreeSet<String>();
-		set2.add("Gabriel");
-		set2.add("Mark");
-		Names names2 = new Names(set2);
-
-		Names diff = AddressBook.difference(names1, names2);
-		Iterator<String> it = diff.iterator();
-
-		assertEquals("Briar", it.next());
-		assertEquals("John", it.next());
-
+		Iterator<String> it = uniqueNames.iterator();
+		assertEquals(AddressBookTestData.AMY, it.next());
+		assertEquals(AddressBookTestData.JOHN, it.next());
 	}
 
 }

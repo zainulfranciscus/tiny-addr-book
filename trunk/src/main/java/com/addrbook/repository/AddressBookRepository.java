@@ -36,14 +36,7 @@ public class AddressBookRepository {
 	 */
 	public void save(String bookname, String name, String phone) {
 
-		AddressBook addrBook = null;
-
-		if (exist(bookname)) {
-			addrBook = getAddressBook(bookname);
-		} else {
-			addrBook = new AddressBook();
-		}
-
+		AddressBook addrBook = (exist(bookname)) ? getAddressBook(bookname) :   new AddressBook();
 		addrBook.add(name, phone);
 		addressBooks.put(bookname, addrBook);
 	}

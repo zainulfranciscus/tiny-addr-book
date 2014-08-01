@@ -1,43 +1,72 @@
 package com.addrbook.repository;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Iterator;
 
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.addrbook.domain.AddressBook;
 import com.addrbook.domain.AddressBook.Names;
+import com.addrbook.domain.AddressBookTestData;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:test-context.xml" })
 public class AddressBookRepositoryTest {
 
-	@Autowired
+	private static final String ADDRESS_BOOK1 = AddressBookTestData.ADDRESS_BOOK_1;
 	private AddressBookRepository addressBookRepository;
 
+	@Before
+	public void setup() {
+		addressBookRepository = new AddressBookRepository();
+		addressBookRepository.save(ADDRESS_BOOK1, AddressBookTestData.AMY,
+				AddressBookTestData.AMY_PHONE);
+	}
+
 	@Test
-	public void testAddNameAndPhone() {
-		addressBookRepository.save("mybook", "Billy", "1111");
-		assertTrue(addressBookRepository.exist("mybook"));
+	public void testShouldHave1ContactInAddressBook() {
 
-		addressBookRepository.save("mybook", "John", "2222");
-		Names names = addressBookRepository.getAddressBook("mybook").names();
+		AddressBook addressBook = addressBookRepository
+				.getAddressBook(ADDRESS_BOOK1);
 
-		assertEquals(2, names.size());
+		Names names = addressBook.names();
+		assertThat(names.size(), equalTo(1));
 
-		Iterator<String> it = names.iterator();
-		assertEquals("Billy", it.next());
-		assertEquals("John", it.next());
+		Iterator<String> namesIterator = addressBook.names().iterator();
+
+		assertThat(namesIterator.next(), equalTo(AddressBookTestData.AMY));
+		assertThat(addressBook.phoneNumberOf(AddressBookTestData.AMY),
+				equalTo(AddressBookTestData.AMY_PHONE));
+
+	}
+		
+	@Test
+	public void testAddressBookShouldExist(){
+		assertTrue(addressBookRepository.exist(ADDRESS_BOOK1));
+	}
+	
+	@Test
+	public void testAddressBookShouldNotExist(){
+		assertFalse(addressBookRepository.exist("Address Book2"));
+	}
+	
+	@Test
+	public void testCanAddNewContactToAddressBook1(){
+		addressBookRepository.save(ADDRESS_BOOK1, AddressBookTestData.JOHN,
+				AddressBookTestData.JOHN_PHONE);
+		
+		AddressBook addressBook = addressBookRepository
+				.getAddressBook(ADDRESS_BOOK1);
+
+		Names names = addressBook.names();
+		assertThat(names.size(), equalTo(2));
+		
+	
+		assertThat(addressBook.phoneNumberOf(AddressBookTestData.JOHN), equalTo(AddressBookTestData.JOHN_PHONE));
+		assertThat(addressBook.phoneNumberOf(AddressBookTestData.AMY), equalTo(AddressBookTestData.AMY_PHONE));
 	}
 
 }
