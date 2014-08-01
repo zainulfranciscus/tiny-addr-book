@@ -30,15 +30,16 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.10</version>
-			<scope>test</scope>
+			<version>4.11</version>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
 			<version>${spring.framework.version}</version>
 			<scope>test</scope>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
@@ -59,16 +60,13 @@
 			<artifactId>guava</artifactId>
 			<version>14.0.1</version>
 		</dependency>
+		
 		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.15</version>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>asg</groupId>
-			<artifactId>cliche</artifactId>
-			<version>110413</version>
+		  <groupId>com.googlecode.cliche</groupId>
+		  <artifactId>cliche</artifactId>
+		  <scope>system</scope>
+		  <version>110413</version>
+		  <systemPath>${project.basedir}/lib/asg.cliche-110413.jar</systemPath>
 		</dependency>
 		<!-- Mock Object Library -->
 		<dependency>
@@ -79,6 +77,13 @@
 		</dependency>
 	</dependencies>
 
+	<repositories>
+		<repository>
+		   <id>sonatype-nexus-snapshots</id>
+		   <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</repository>
+    </repositories>
+    
 	<build>
 		<plugins>
 			<plugin>

@@ -1,6 +1,7 @@
 package com.addrbook.domain;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -21,17 +22,17 @@ import com.google.common.io.Files;
  */
 public class AddressBook {
 
-	private Map<String, String> namesAndPhones;
+	private Map<String, String> namesAndPhones = new HashMap<String,String>();
 
 	public AddressBook() {
 
-		File dbDir = Files.createTempDir();
-		File dbFile = new File(dbDir, dbDir.getName());
-
-		DB db = DBMaker.newFileDB(dbFile).deleteFilesAfterClose().closeOnJvmShutdown().writeAheadLogDisable()
-				.cacheSize(10).make();
-
-		namesAndPhones = db.createTreeMap("AddressBook", 10, true, false, null, null, NameComparator.ascOrder());
+//		File dbDir = Files.createTempDir();
+//		File dbFile = new File(dbDir, dbDir.getName());
+//
+//		DB db = DBMaker.newFileDB(dbFile).deleteFilesAfterClose().closeOnJvmShutdown().writeAheadLogDisable()
+//				.cacheSize(10).make();
+//
+//		namesAndPhones = db.createTreeMap("AddressBook", 10, true, false, null, null, NameComparator.ascOrder());
 	}
 
 	/**
@@ -62,7 +63,7 @@ public class AddressBook {
 	 *            recorded in this address book
 	 * @return
 	 */
-	public String phone(String name) {
+	public String phoneNumberOf(String name) {
 		return namesAndPhones.get(name);
 	}
 
@@ -71,7 +72,7 @@ public class AddressBook {
 	 */
 	public void printdesc() {
 
-		print(names().desc());
+		print(names().sortedDescendingly());
 	}
 
 	/**
@@ -88,10 +89,15 @@ public class AddressBook {
 	 */
 	public void print(Names names) {
 		for (String name : names.names) {
-			System.out.println(name + " " + phone(name));
+			System.out.println(name + " " + phoneNumberOf(name));
 		}
 	}
 
+	public static Names findUniqueNames(AddressBook addrBook,
+			AddressBook addrBook2) {
+		return difference(addrBook.names(), addrBook2.names());
+	}
+	
 	/**
 	 * @param n1
 	 * @param n2
@@ -116,10 +122,15 @@ public class AddressBook {
 			names.addAll(n);
 		}
 
-		public Names desc() {
+		public Names sortedDescendingly() {
 			return new Names(names, NameComparator.descOrder());
 		}
 
+		public Names sortedAscendingly() {
+			return new Names(names,NameComparator.ascOrder());
+		}
+		
+		
 		public void print() {
 			for (String name : names) {
 				System.out.println(name);
@@ -134,6 +145,10 @@ public class AddressBook {
 			return names.size();
 		}
 
+		
+
 	}
+
+	
 
 }

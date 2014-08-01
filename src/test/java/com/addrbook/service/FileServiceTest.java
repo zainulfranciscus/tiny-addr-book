@@ -1,9 +1,13 @@
 package com.addrbook.service;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
+
+import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.equalTo;
+
 
 import java.io.IOException;
 import java.util.Set;
@@ -11,55 +15,63 @@ import java.util.TreeSet;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.addrbook.domain.AddressBook;
+import com.addrbook.domain.AddressBook.Names;
+import com.addrbook.domain.AddressBookTestData;
 import com.addrbook.repository.AddressBookRepository;
+import com.addrbook.service.impl.FileServiceImpl;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:test-context.xml" })
+
 public class FileServiceTest {
 
-	@Autowired
-	private FileService fileService;
+	private FileService fileService = new FileServiceImpl();
 
 	private AddressBookRepository mockRepository;
 
 	@Before
 	public void setup() {
 		mockRepository = Mockito.mock(AddressBookRepository.class);
-	}
-
-	@Test
-	public void testSave() {
+		
+		
 		ReflectionTestUtils.setField(fileService, "addressBook", mockRepository);
-		fileService.save("mybook", "john", "04557799");
-		Mockito.verify(mockRepository).getAddressBook("mybook");
+	}
+
+	@Test
+	public void testShouldReturnAnAddressBookAfterCreatingOne() {
+			
+		fileService.save(AddressBookTestData.ADDRESS_BOOK_1, AddressBookTestData.JOHN, AddressBookTestData.JOHN_PHONE);
+		Mockito.verify(mockRepository).save(AddressBookTestData.ADDRESS_BOOK_1, AddressBookTestData.JOHN, AddressBookTestData.JOHN_PHONE);
+		Mockito.verify(mockRepository).getAddressBook(AddressBookTestData.ADDRESS_BOOK_1);
 
 	}
 
 	@Test
-	public void testFindAddrBook() {
-		ReflectionTestUtils.setField(fileService, "addressBook", mockRepository);
-		fileService.findAddrBook("mybook");
-		Mockito.verify(mockRepository).getAddressBook("mybook");
+	public void testShouldReturnAddressBook1() {
+		
+		fileService.findAddrBook(AddressBookTestData.ADDRESS_BOOK_1);
+		Mockito.verify(mockRepository).getAddressBook(AddressBookTestData.ADDRESS_BOOK_1);
 	}
 
 	@Test
-	public void testNames() throws IOException {
+	public void testShouldReturnNamesInAddressBook() throws IOException {
 
 		AddressBook addrBook = new AddressBook();
-		when(mockRepository.getAddressBook("mybook")).thenReturn(addrBook);
+		addrBook.add(AddressBookTestData.JOHN, AddressBookTestData.JOHN_PHONE);
+		
+		when(mockRepository.getAddressBook(AddressBookTestData.ADDRESS_BOOK_1)).thenReturn(addrBook);
 
 		ReflectionTestUtils.setField(fileService, "addressBook", mockRepository);
-		fileService.names("mybook");
-
-		Mockito.verify(mockRepository).getAddressBook("mybook");
+		
+		Names names = fileService.names(AddressBookTestData.ADDRESS_BOOK_1);
+		
+		assertThat(names.size(), equalTo(1));
+		assertThat(names.iterator().next(),equalTo(AddressBookTestData.JOHN));
+		assertThat(addrBook.phoneNumberOf(AddressBookTestData.JOHN),equalTo( AddressBookTestData.JOHN_PHONE));
+		
+		Mockito.verify(mockRepository).getAddressBook(AddressBookTestData.ADDRESS_BOOK_1);
 	}
 
 	@Test
@@ -68,7 +80,7 @@ public class FileServiceTest {
 		when(mockRepository.getAddressBook("mybook")).thenReturn(addrBook);
 		when(mockRepository.getAddressBook("otherbook")).thenReturn(null);
 
-		ReflectionTestUtils.setField(fileService, "addressBook", mockRepository);
+
 		assertTrue(fileService.isRecorded("mybook"));
 		assertFalse(fileService.isRecorded("otherbook"));
 	}

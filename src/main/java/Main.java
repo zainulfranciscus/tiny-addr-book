@@ -60,7 +60,7 @@ public class Main {
 	public void diffDesc(String addressbook1, String addressbook2) throws CLIException {
 
 		Names names = diff(addressbook1, addressbook2);
-		names.desc().print();
+		names.sortedDescendingly().print();
 	}
 
 	private Names diff(String addressbook1, String addressbook2) throws CLIException {
