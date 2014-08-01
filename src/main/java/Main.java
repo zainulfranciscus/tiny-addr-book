@@ -11,6 +11,9 @@ import com.addrbook.domain.AddressBook;
 import com.addrbook.domain.AddressBook.Names;
 import com.addrbook.service.FileService;
 
+/**
+ * A description about the purpose of this application can be found at: https://code.google.com/p/tiny-addr-book/wiki/Introduction
+**/
 public class Main {
 
 	private FileService fileService;
