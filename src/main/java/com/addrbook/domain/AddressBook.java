@@ -26,13 +26,13 @@ public class AddressBook {
 
 	public AddressBook() {
 
-//		File dbDir = Files.createTempDir();
-//		File dbFile = new File(dbDir, dbDir.getName());
-//
-//		DB db = DBMaker.newFileDB(dbFile).deleteFilesAfterClose().closeOnJvmShutdown().writeAheadLogDisable()
-//				.cacheSize(10).make();
-//
-//		namesAndPhones = db.createTreeMap("AddressBook", 10, true, false, null, null, NameComparator.ascOrder());
+		File dbDir = Files.createTempDir();
+		File dbFile = new File(dbDir, dbDir.getName());
+
+		DB db = DBMaker.newFileDB(dbFile).deleteFilesAfterClose().closeOnJvmShutdown().writeAheadLogDisable()
+				.cacheSize(10).make();
+
+		namesAndPhones = db.createTreeMap("AddressBook", 10, true, false, null, null, NameComparator.ascOrder());
 	}
 
 	/**
