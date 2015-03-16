@@ -13,73 +13,82 @@ import com.addrbook.domain.AddressBook.Names;
 
 public class AddressBookTest {
 
-	private AddressBook addrBook = new AddressBook();
-	private AddressBook addrBook2 = new AddressBook();
+	public static final String ABIGAIL = "Abigail";
+	public static final String AMY_PHONE = "2222";
+	public static final String JOHN_PHONE = "1111";
+	public static final String AMY = "Amy";
+	public static final String JOHN = "John";
+	public static final String NAME_OF_ADDRESS_BOOK = "Address Book";
+
+	private AddressBook firstAddressBook = new AddressBook();
+	private AddressBook secondAddressBook = new AddressBook();
 	private AddressBook emptyBook = new AddressBook();
 
 	@Before
 	public void setup() {
 
-		addrBook.add(AddressBookTestData.JOHN, AddressBookTestData.JOHN_PHONE);
-		addrBook.add(AddressBookTestData.AMY, AddressBookTestData.AMY_PHONE);
+		firstAddressBook.add(JOHN, JOHN_PHONE);
+		firstAddressBook.add(AMY, AMY_PHONE);
 
-		addrBook2.add(AddressBookTestData.ABIGAIL, "");
-		addrBook2.add(AddressBookTestData.AMY, AddressBookTestData.AMY_PHONE);
+		secondAddressBook.add(ABIGAIL, "");
+		secondAddressBook.add(AMY, AMY_PHONE);
 	}
 
 	@Test
 	public void testThereShouldBe2Contacts() {
 
-		Names names = addrBook.names();
+		Names names = firstAddressBook.names();
 		assertThat(names.size(), equalTo(2));
 
 		Iterator<String> it = names.iterator();
-		assertEquals(AddressBookTestData.AMY, it.next());
-		assertEquals(AddressBookTestData.JOHN, it.next());
-
-		assertEquals(AddressBookTestData.JOHN_PHONE, addrBook.phoneNumberOf(AddressBookTestData.JOHN));
-		assertEquals(AddressBookTestData.AMY_PHONE, addrBook.phoneNumberOf(AddressBookTestData.AMY));
+		assertEquals(AMY, it.next());
+		assertEquals(JOHN, it.next());
 	}
 
 	@Test
-	public void testNamesCanBeSortedDescendingly() {
+	public void shouldReturnJohnPhoneNumber(){
+		assertEquals(JOHN_PHONE, firstAddressBook.phoneNumberOf(JOHN));
+	}
 
-		Names names = addrBook.names().sortedDescendingly();
+	@Test
+	public void namesShouldBeSortedDescendingly() {
+
+		Names names = firstAddressBook.names().sortedDescendingly();
 		Iterator<String> it = names.iterator();
-		assertEquals(AddressBookTestData.JOHN, it.next());
-		assertEquals(AddressBookTestData.AMY, it.next());
+		assertEquals(JOHN, it.next());
+		assertEquals(AMY, it.next());
 
 	}
 	
 	@Test
-	public void testNamesCanBeSortedAscendingly(){
-		Names names = addrBook.names().sortedAscendingly();
+	public void namesShouldBeSortedAscendingly(){
+		Names names = firstAddressBook.names().sortedAscendingly();
 		Iterator<String> it = names.iterator();
-		assertEquals(AddressBookTestData.AMY, it.next());
-		assertEquals(AddressBookTestData.JOHN, it.next());
+		assertEquals(AMY, it.next());
+		assertEquals(JOHN, it.next());
 	}
 
 	@Test
-	public void testThereShouldBe2UniqueNames() {
+	public void thereShouldBe2UniqueNames() {
 
-		Names uniqueNames = AddressBook.findUniqueNames(addrBook, addrBook2);
+		Names uniqueNames = AddressBook.findUniqueNames(firstAddressBook, secondAddressBook);
 
 		assertThat(uniqueNames.size(), equalTo(2));
 
 		Iterator<String> it = uniqueNames.iterator();
-		assertEquals(AddressBookTestData.ABIGAIL, it.next());
-		assertEquals(AddressBookTestData.JOHN, it.next());
+		assertEquals(ABIGAIL, it.next());
+		assertEquals(JOHN, it.next());
 	}
 	
 	@Test
-	public void testUniqueNamesWithEmptyAddrBook(){
-		Names uniqueNames = AddressBook.findUniqueNames(addrBook, emptyBook);
+	public void shouldContentFromTheFirstAddressBook(){
+		Names uniqueNames = AddressBook.findUniqueNames(firstAddressBook, emptyBook);
 
 		assertThat(uniqueNames.size(), equalTo(2));
 
 		Iterator<String> it = uniqueNames.iterator();
-		assertEquals(AddressBookTestData.AMY, it.next());
-		assertEquals(AddressBookTestData.JOHN, it.next());
+		assertEquals(AMY, it.next());
+		assertEquals(JOHN, it.next());
 	}
 
 }
